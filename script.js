@@ -1,48 +1,51 @@
+const BIN_ID = "6afff3b0ac6210605a96b6f3";
+const API_KEY = "$2a$10$j6p/0Hzz9A7aRuYZTNadVuwqACXY8DhHdh1jowtra.nQRGipbEdta";
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+let stok = {};
 let isAdmin = false;
-let stok ={};
-let BIN_URL = 'https://kvdb.io/YogaCellMoga2026/stok';
-async function loadStok(){
-  try{
-    let r = await fetch(BIN_URL);
-    if(r.ok){ stok = await r.json(); }
-  }catch(e){}
-  tampilkan();
+async function loadStok() {
+  try {
+    const res = await fetch(`${BIN_URL}/latest`, { headers: { "X-Master-Key": API_KEY } });
+    const data = await res.json();
+    stok = data.record;
+    updateTampilan();
+  } catch(e) { console.log("gagal load", e); }
 }
-async function simpanStok(){
-  try{ await fetch(BIN_URL, {method:'POST', body: JSON.stringify(stok)}); }catch(e){}
+async function saveStok() {
+  await fetch(BIN_URL, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+    body: JSON.stringify(stok)
+  });
 }
-
-function tampilkan(){
-    document.querySelectorAll('.cell-status').forEach(td => {
-        let paket = td.dataset.paket;
-        let status = stok[paket] || 'Ada';
-        if(isAdmin){
-            td.innerHTML = `<select class="status" data-paket="${paket}"><option value="Ada" ${status==='Ada'?'selected':''}>Ada</option><option value="Kosong" ${status==='Kosong'?'selected':''}>Kosong</option></select>`;
-            td.querySelector('select').addEventListener('change', function(){
-                stok[this.dataset.paket] = this.value;
-                simpanStok();
-                tampilkan();
-            });
-        } else {
-            td.innerHTML = status === 'Ada' ? `<span class="badge-ada">✅ Ada</span>` : `<span class="badge-kosong">❌ Kosong</span>`;
-        }
-    });
-    document.getElementById('btnAdmin').innerText = isAdmin ? '🔓 Keluar Admin' : '🔒 Mode Admin';
+function updateTampilan() {
+  document.querySelectorAll(".cell-status").forEach(cell => {
+    const nama = cell.getAttribute("data-paket");
+    if (!nama || !stok[nama]) return;
+    cell.textContent = stok[nama] === "Ada" ? "✅ Ada" : "❌ Kosong";
+    cell.style.fontWeight = "bold";
+    cell.style.textAlign = "center";
+    cell.style.color = stok[nama] === "Ada" ? "green" : "red";
+    cell.style.cursor = isAdmin ? "pointer" : "default";
+    cell.onclick = async () => {
+      if (!isAdmin) return;
+      stok[nama] = stok[nama] === "Ada" ? "Kosong" : "Ada";
+      updateTampilan();
+      await saveStok();
+      alert(nama + " jadi " + stok[nama]);
+    };
+  });
 }
-
-document.getElementById('btnAdmin').addEventListener('click', function(){
-    if(!isAdmin){
-        let pw = prompt('Masukkan Password Admin:');
-        if(pw === 'yoga123'){
-            isAdmin = true;
-            tampilkan();
-        } else {
-            alert('Password salah!');
-        }
-    } else {
-        isAdmin = false;
-        tampilkan();
-    }
-});
-
+function toggleAdmin() {
+  if (!isAdmin) {
+    const pw = prompt("Password admin:");
+    if (pw !== "admin123") { alert("Password salah!"); return; }
+    isAdmin = true;
+    document.getElementById("btnAdmin").textContent = "✅ Mode Admin AKTIF - Klik Status untuk ubah";
+  } else {
+    isAdmin = false;
+    document.getElementById("btnAdmin").textContent = "🔒 Mode Admin";
+  }
+  updateTampilan();
+}
 loadStok();
