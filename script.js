@@ -39,7 +39,7 @@ function updateTampilan() {
 function toggleAdmin() {
   if (!isAdmin) {
     const pw = prompt("Password admin:");
-    if (pw !== "admin123") { alert("Password salah!"); return; }
+    if (pw !== "Bisa123") { alert("Password salah!"); return; }
     isAdmin = true;
     document.getElementById("btnAdmin").textContent = "✅ Mode Admin AKTIF - Klik Status untuk ubah";
   } else {
