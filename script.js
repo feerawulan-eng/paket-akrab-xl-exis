@@ -47,9 +47,8 @@ function updateTampilan() {
     if (!stok[nama]) stok[nama] = "Kosong";
     const ada = stok[nama] === "Ada";
 
-    cell.innerHTML = `<span class="${ada ? "tersedia" : "habis"}">${ada ? " Ada" : " Habis"}</span>`;
+    cell.innerHTML = `<span class="${ada ? "tersedia" : "habis"}">${ada ? " Tersedia" : " Habis"}</span>`;
     cell.style.cursor = isAdmin ? "pointer" : "default";
-
     cell.onclick = async () => {
       if (!isAdmin) return;
       stok[nama] = ada ? "Kosong" : "Ada";
