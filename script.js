@@ -1,5 +1,5 @@
-const BIN_ID = "ISI_BIN_ID_KAMU";
-const API_KEY = "ISI_API_KEY_KAMU";
+const BIN_ID = "6afff3b0ac6210605a96b6f3";
+const API_KEY = "$2a$10$j6p/0Hzz9A7aRuYZTNadVuwqACXY8DhHdh1jowtra.nQRGipbEdta";
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 let stok = {};
